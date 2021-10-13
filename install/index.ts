@@ -1,7 +1,7 @@
 import { parse } from 'https://deno.land/std@0.110.0/flags/mod.ts';
 import { fatal } from './log.ts';
 import { init, platform } from './settings.ts';
-import { installTerraform, installVault, installDocker, installDockerCompose, installDockerMachine, installKubectl } from './install.ts';
+import { installTerraform, installVault, installDocker, installDockerCompose, installDockerMachine, installKubectl, installDoctl } from './install.ts';
 
 await init();
 
@@ -9,7 +9,7 @@ const args = parse(Deno.args, { string: [ 'version', 'alias' ] });
 if (args._.length == 0) {
   console.log('Args: <program> [version]');
   console.log('');
-  console.log('Programs: docker, docker-compose, docker-machine, kubectl, terraform, vault');
+  console.log('Programs: docker, docker-compose, docker-machine, doctl, kubectl, terraform, vault');
   console.log('');
   console.log('Options:');
   console.log('  --version 0.0.0');
@@ -53,6 +53,8 @@ if (program === 'terraform') {
   installDockerMachine({ version, alias });
 } else if (program === 'kubectl') {
   installKubectl({ version, alias });
+} else if (program === 'doctl') {
+  installDoctl({ version, alias });
 } else {
   fatal(`Unknown program: ${program}`);
 }

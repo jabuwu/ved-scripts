@@ -5,6 +5,7 @@ import { binDir, platform, distro } from './settings.ts';
 import { cmd } from './cmd.ts';
 import { download } from './download.ts';
 import { unzipFile } from './unzip.ts';
+import { untarFile } from './untar.ts';
 
 const exeSuffix = platform === 'windows' ? '.exe' : '';
 const hashicorpArch = platform === 'windows' ? 'windows_amd64' : 'linux_amd64';
@@ -57,6 +58,28 @@ async function installRemoteZip(name: string, url: string, path: string) {
     onWriteProgress(bytes, length) {
       writeProgress.total = length;
       writeProgress.render(bytes);
+    },
+  });
+  await install(name, binFile);
+  await Deno.remove(zipFile);
+}
+
+async function installRemoteTgz(name: string, url: string, path: string) {
+  const zipFile = await Deno.makeTempFile();
+  const binFile = await Deno.makeTempFile();
+  const downloadProgress = new ProgressBar({ display: `Downloading ${name} :time [:bar] :percent` });
+  const unzipProgress = new ProgressBar({ display: `Untarring ${name} :time [:bar] :percent` });
+  await download(url, zipFile, {
+    onProgress(bytes, length) {
+      downloadProgress.total = length;
+      downloadProgress.render(bytes);
+    }
+  });
+  await untarFile(zipFile, path, binFile, {
+    compressed: true,
+    onUntarProgress(bytes, length) {
+      unzipProgress.total = length;
+      unzipProgress.render(bytes);
     },
   });
   await install(name, binFile);
@@ -119,5 +142,13 @@ export async function installKubectl(opts: { version?: string, alias?: string } 
   const file = await Deno.makeTempFile();
   await download(url, file);
   await install(alias, file);
+  done();
+}
+
+export async function installDoctl(opts: { version?: string, alias?: string } = {}) {
+  const { version = '1.65.0', alias = 'doctl' } = opts;
+  const url = `https://github.com/digitalocean/doctl/releases/download/v${version}/doctl-${version}-linux-amd64.tar.gz`;
+  const done = installStr('doctl', version, alias);
+  await installRemoteTgz(alias, url, `doctl${exeSuffix}`);
   done();
 }
