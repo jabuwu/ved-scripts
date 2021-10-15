@@ -1,7 +1,7 @@
 import { parse } from 'https://deno.land/std@0.110.0/flags/mod.ts';
 import { fatal } from './log.ts';
 import { init, platform } from './settings.ts';
-import { installTerraform, installVault, installDocker, installDockerCompose, installDockerMachine, installKubectl, installDoctl } from './install.ts';
+import { installTerraform, installVault, installDocker, installDockerCompose, installDockerMachine, installKubectl, installDoctl, installHelm } from './install.ts';
 
 await init();
 
@@ -55,6 +55,8 @@ if (program === 'terraform') {
   installKubectl({ version, alias });
 } else if (program === 'doctl') {
   installDoctl({ version, alias });
+} else if (program === 'helm') {
+  installHelm({ version, alias });
 } else {
   fatal(`Unknown program: ${program}`);
 }

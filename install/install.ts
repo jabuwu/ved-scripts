@@ -7,11 +7,14 @@ import { download } from './download.ts';
 import { unzipFile } from './unzip.ts';
 import { untarFile } from './untar.ts';
 
+const arch = platform === 'windows' ? 'windows' : 'linux';
 const exeSuffix = platform === 'windows' ? '.exe' : '';
 const hashicorpArch = platform === 'windows' ? 'windows_amd64' : 'linux_amd64';
 const dockerKernel = platform === 'windows' ? 'Windows' : 'Linux';
 const dockerArchitecture = 'x86_64';
-const kubectlArch = platform === 'windows' ? 'windows' : 'linux';
+const kubectlArch = arch;
+const doctlArch = arch;
+const helmArch = arch;
 
 export async function install(alias: string, file: string) {
   const path = `${binDir}/${alias}${exeSuffix}`
@@ -147,8 +150,16 @@ export async function installKubectl(opts: { version?: string, alias?: string } 
 
 export async function installDoctl(opts: { version?: string, alias?: string } = {}) {
   const { version = '1.65.0', alias = 'doctl' } = opts;
-  const url = `https://github.com/digitalocean/doctl/releases/download/v${version}/doctl-${version}-linux-amd64.tar.gz`;
+  const url = `https://github.com/digitalocean/doctl/releases/download/v${version}/doctl-${version}-${doctlArch}-amd64.tar.gz`;
   const done = installStr('doctl', version, alias);
   await installRemoteTgz(alias, url, `doctl${exeSuffix}`);
+  done();
+}
+
+export async function installHelm(opts: { version?: string, alias?: string } = {}) {
+  const { version = '3.7.1', alias = 'helm' } = opts;
+  const url = `https://get.helm.sh/helm-v${version}-${helmArch}-amd64.tar.gz`;
+  const done = installStr('helm', version, alias);
+  await installRemoteTgz(alias, url, `${helmArch}-amd64/helm${exeSuffix}`);
   done();
 }
