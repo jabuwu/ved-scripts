@@ -1,0 +1,8 @@
+scripts:
+  box:
+  hello:
+  hi:
+  install:
+  test:
+defaultFlags:
+  rawFlags: -A -q
