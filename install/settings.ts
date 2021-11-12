@@ -3,7 +3,7 @@ import { fatal } from './log.ts';
 export const platform = Deno.build.os;
 export const binDir = platform === 'linux' ? '/usr/local/bin' : 'bin/';
 
-export type Distro = 'windows' | 'alpine' | 'ubuntu' | 'debian';
+export type Distro = 'windows' | 'alpine' | 'ubuntu' | 'debian' | 'fedora';
 export let distro: Distro;
 
 export async function init() {
@@ -16,7 +16,7 @@ export async function init() {
         for (const line of lines) {
           if (line.startsWith('ID=')) {
             const id = line.substr(3);
-            if (id === 'alpine' || id === 'ubuntu' || id === 'debian') {
+            if (id === 'alpine' || id === 'ubuntu' || id === 'debian' || id === 'fedora') {
               distro = id;
             } else {
               fatal(`Unsupported distro: ${id}`);

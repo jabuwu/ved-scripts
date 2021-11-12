@@ -90,7 +90,7 @@ async function installRemoteTgz(name: string, url: string, path: string) {
 }
 
 export async function installTerraform(opts: { version?: string, alias?: string } = {}) {
-  const { version = '1.0.8', alias = 'terraform' } = opts;
+  const { version = '1.0.11', alias = 'terraform' } = opts;
   const url = `https://releases.hashicorp.com/terraform/${version}/terraform_${version}_${hashicorpArch}.zip`;
   const done = installStr('terraform', version, alias);
   await installRemoteZip(alias, url, `terraform${exeSuffix}`);
@@ -112,6 +112,8 @@ export async function installDocker() {
   const done = installStr('docker', '', 'docker');
   if (distro === 'debian' || distro === 'ubuntu') {
     throw new Error('NYI: installing docker on debian');
+  } else if (distro === 'fedora') {
+    throw new Error('NYI: installing docker on fedora');
   } else if (distro === 'alpine') {
     await cmd(['apk', 'add', 'docker']);
   }
